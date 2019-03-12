@@ -10,6 +10,8 @@ void true_foo(std::vector<std::vector<double> > & xt, std::vector<double> & yt);
 
 void print_y(std::vector<std::vector<double> > const & xt, std::vector<double> const & yt);
 
+double net_foo(std::vector<double> const & xt, std::vector<double> const & wt);
+
 
 int main(int argc, char const *argv[])
 {
@@ -35,7 +37,15 @@ int main(int argc, char const *argv[])
 	// Выходной вектор функциии (2^4)
 	std::vector<double> y;
 
-	// std::cout << "> > > main - Ok!" << std::endl;
+
+
+
+
+	// do
+	// {
+	// 	delta = 0;
+
+	// } while (delta);
 
 
 	return 0;
@@ -90,4 +100,16 @@ void print_y(std::vector<std::vector<double> > const & xt, std::vector<double> c
 	std::cout << std::endl;
 
 	// std::cout << "> > > print_y - Ok!" << std::endl;
+}
+
+double net_foo(std::vector<double> const & xt, std::vector<double> const & wt)
+{
+	double net = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		net += ( xt[i] * wt[i] );
+	}
+	net += ( 1 * wt[4] );
+
+	return net;
 }
