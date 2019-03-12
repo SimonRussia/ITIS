@@ -2,4 +2,4 @@
 *install*/
 *.swp
 *.DS_Store
-*a.out
+*.out
