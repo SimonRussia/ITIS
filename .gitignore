@@ -1,5 +1,6 @@
 *build*/
 *install*/
+*копия*/
 *.swp
 *.DS_Store
 *.out
