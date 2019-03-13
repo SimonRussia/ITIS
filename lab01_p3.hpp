@@ -3,12 +3,22 @@
 #include <bitset>
 #include <cmath>
 
+
+// declaration block ~~~~~~~~~~~~~~~~~~~~~~~~
 void teach(std::vector<std::vector<double> > & x, std::vector<double> & w, std::vector<double> & y, std::vector<double> & true_y);
+double check(std::vector<std::vector<double> > & x, std::vector<double> & w, std::vector<double> & y, std::vector<double> & true_y);
+void binary(std::vector<std::vector<double> > & xt);
+void true_foo(std::vector<std::vector<double> > & xt, std::vector<double> & yt);
+void print_y(std::vector<std::vector<double> > const & xt, std::vector<double> const & yt);
+void print_test(std::vector<double> const & yt);
+double net_foo(std::vector<double> const & xt, std::vector<double> const & wt);
+void fil_foo(double net, double & _y);
+double err_foo(double tr_y, double y);
+double check_foo(double tr_y, double y);
+void cor_foo(double del, std::vector<double> & xt, std::vector<double> & wt);
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int flag = 0;
-
-
-
 
 // Функция составления двоичных комбинаций 2^4
 void binary(std::vector<std::vector<double> > & xt)
@@ -63,7 +73,7 @@ void print_test(std::vector<double> const & yt)
 		std::cout << yt[i] << " ";
 	}
 
-	std::cout << "\n" << std::endl;
+	std::cout << std::endl;
 }
 
 double net_foo(std::vector<double> const & xt, std::vector<double> const & wt)
@@ -93,7 +103,6 @@ void fil_foo(double net, double & _y)
 // Функция вычисления ошибки delta tr_y - учитель, y - тестовое значение.
 double err_foo(double tr_y, double y)
 {
-	
 	double delta = tr_y - y;
 	if (delta != 0) {
 		flag = 1;
@@ -101,6 +110,13 @@ double err_foo(double tr_y, double y)
 
 	return delta;
 }
+
+double check_err(double tr_y, double y)
+{
+	double delta = tr_y - y;
+	return delta;
+}
+
 
 double nu = 0.3;
 double dFoo = 1;
@@ -115,7 +131,6 @@ void cor_foo(double del, std::vector<double> & xt, std::vector<double> & wt)
 	}
 }
 
-
 // teach function
 void teach(std::vector<std::vector<double> > & x, std::vector<double> & w, std::vector<double> & y, std::vector<double> & true_y)
 {
@@ -124,32 +139,72 @@ void teach(std::vector<std::vector<double> > & x, std::vector<double> & w, std::
 	double _delta = 0;
 	double _detX = 0;
 	double gErr = 0;
-
+	double prob = 0;
+	double loop = 1;
 	do
 	{
-		count++;
-		flag = 0;
-		gErr = 0;
+		loop++;
+		count = 0;
 
-		for (int i = 0; i < 16; i++)
+		std::vector<double> test(5, 0);
+		w = test;
+
+		do
 		{
-			out = net_foo(x[i], w);
+			count++;
+			flag = 0;
+			gErr = 0;
 
-			fil_foo(out, y[i]);
+			for (int i = 0; i < loop; i++)
+			{
+				out = net_foo(x[i], w);
 
-			_delta = err_foo(true_y[i], y[i]);
+				fil_foo(out, y[i]);
 
-			gErr += abs(_delta);
+				_delta = err_foo(true_y[i], y[i]);
 
-			cor_foo(_delta, x[i], w);
-		}
+				gErr += abs(_delta);
 
-		std::cout << "\nERA: " << count << "		Error Sum: " << gErr << std::endl;
-		std::cout << "		w0	w1	w2	w3	w4" << std::endl;
-		std::cout <<"Vector W:	" << w[4] << "	" << w[0] << "	" << w[1] << "	" << w[2] << "	" << w[3] << std::endl;
-		print_test(y);
+				cor_foo(_delta, x[i], w);
+			}
 
-	} while (flag);
+			std::cout << "\nERA: " << count << "		Error Sum: " << gErr << std::endl;
+			std::cout << "		w0	w1	w2	w3	w4" << std::endl;
+			std::cout <<"Vector W:	" << w[4] << "	" << w[0] << "	" << w[1] << "	" << w[2] << "	" << w[3] << std::endl;
 
-	std::cout << std::endl << "Number of era:" << count << std::endl;
+		} while (flag);
+
+		prob = check(x, w, y, true_y);
+
+	} while (prob != 0);
+
+	std::cout << "\nRESUME ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+
+	std::cout << "Enough " << loop << " variable(s) & " << count << " ERAs for theach =)" << std::endl;
+}
+
+double check(std::vector<std::vector<double> > & x, std::vector<double> & w, std::vector<double> & y, std::vector<double> & true_y)
+{
+	int count = 0;
+	double out = 0;
+	double _delta = 0;
+	double gErr = 0;
+	double prob = 0;
+	
+	for (int i = 0; i < 16; i++)
+	{
+		out = net_foo(x[i], w);
+
+		fil_foo(out, y[i]);
+
+		_delta = check_err(true_y[i], y[i]);
+
+		gErr += abs(_delta);
+	}
+
+	std::cout << "\nTESTING NN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+	print_test(y);
+	std::cout << "Error Sum: " << gErr << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+
+	return gErr;
 }
